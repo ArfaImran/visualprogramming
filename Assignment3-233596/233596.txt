@@ -1,0 +1,109 @@
+Step 1: Writing XML File with XmlWriter
+
+
+using System;
+using System.Xml;
+
+class Program
+{
+    static void Main()
+    {
+        // Set up the XML writer settings.
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.IndentChars = "\t";
+
+        // Create the XML file and start writing.
+        using (XmlWriter writer = XmlWriter.Create("GPS.xml", settings))
+        {
+            writer.WriteStartDocument();
+            writer.WriteStartElement("GPS_Log");
+
+            // Start Position element with DateTime attribute
+            writer.WriteStartElement("Position");
+            writer.WriteAttributeString("DateTime", "1/26/2017 5:08:59 PM");
+            writer.WriteElementString("x", "65.8973342");
+            writer.WriteElementString("y", "72.3452346");
+
+            // SatteliteInfo with Speed and NoSatt elements
+            writer.WriteStartElement("SatteliteInfo");
+            writer.WriteElementString("Speed", "40");
+            writer.WriteElementString("NoSatt", "7");
+            writer.WriteEndElement(); // End SatteliteInfo
+
+            writer.WriteEndElement(); // End Position
+
+            // Image element with Resolution attribute
+            writer.WriteStartElement("Image");
+            writer.WriteAttributeString("Resolution", "1024x800");
+            writer.WriteElementString("Path", @"\images\1.jpg");
+            writer.WriteEndElement(); // End Image
+
+            writer.WriteEndElement(); // End GPS_Log
+            writer.WriteEndDocument();
+        }
+
+        Console.WriteLine("XML file 'GPS.xml' created successfully.");
+    }
+}
+
+
+
+
+Step 2: Reading and Displaying the XML File with XmlReader
+
+
+
+
+using System;
+using System.Xml;
+
+class Program
+{
+    static void Main()
+    {
+        // Check if XML file exists before attempting to read
+        if (!System.IO.File.Exists("GPS.xml"))
+        {
+            Console.WriteLine("XML file 'GPS.xml' not found.");
+            return;
+        }
+
+        using (XmlReader reader = XmlReader.Create("GPS.xml"))
+        {
+            while (reader.Read())
+            {
+                if (reader.IsStartElement())
+                {
+                    switch (reader.Name)
+                    {
+                        case "Position":
+                            Console.WriteLine("Position DateTime: " + reader["DateTime"]);
+                            break;
+                        case "x":
+                            Console.WriteLine("x: " + reader.ReadElementContentAsString());
+                            break;
+                        case "y":
+                            Console.WriteLine("y: " + reader.ReadElementContentAsString());
+                            break;
+                        case "SatteliteInfo":
+                            break;
+                        case "Speed":
+                            Console.WriteLine("Speed: " + reader.ReadElementContentAsString());
+                            break;
+                        case "NoSatt":
+                            Console.WriteLine("NoSatt: " + reader.ReadElementContentAsString());
+                            break;
+                        case "Image":
+                            Console.WriteLine("Image Resolution: " + reader["Resolution"]);
+                            break;
+                        case "Path":
+                            Console.WriteLine("Path: " + reader.ReadElementContentAsString());
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
+
